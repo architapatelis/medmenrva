@@ -3,7 +3,8 @@ from google.appengine.ext.webapp.util import run_wsgi_app
 from google.appengine.api import users
 import logging
 from models import members
-from __builtin__ import True
+import urllib 
+
 
 
 current_folder = os.path.dirname(__file__)
@@ -17,6 +18,12 @@ class Handler(webapp2.RequestHandler):
     def __init__(self, request=None, response=None):
         super(Handler, self).__init__(request, response)
         self.values = {}
+        self.logout_link = users.create_logout_url("/")
+        self.values['logout_link'] = self.logout_link
+        self.login_link = users.create_login_url(self.request.uri)
+        self.values['login_link'] = self.make_login_url()
+        self.user = users.get_current_user()
+        self.values['user'] = self.user
         
     def write(self, *a):
         """ outputs the passed argument"""
@@ -30,19 +37,19 @@ class Handler(webapp2.RequestHandler):
         self.write(self.render_html(template))
 
 
+    def make_login_url(self, to_create_profile=True):
+        if to_create_profile:
+            args = {'dest_url': self.request.uri}
+            return users.create_login_url("/signup" + '?' +\
+                                          urllib.urlencode(args))
+
     def get_user_info(self):
-        """
-        Figures out if the user is logged in and fills in global variables
+    
+        """Figures out if the user is logged in and fills in global variables
         if it is. If logged in, figures out if the user is signed up and 
-        sets variables for user information.
-        """
-        self.user = users.get_current_user()
-        if self.user:
-            url_link = users.create_logout_url("/")           
-        else:
-            url_link = users.create_login_url(self.request.uri) 
+        sets variables for user information."""
         
-        self.values["url_link"] = url_link
+        self.user = users.get_current_user()
         self.values["user"] = self.user
     
     
@@ -72,22 +79,26 @@ class Handler(webapp2.RequestHandler):
 class MainPage(Handler):
     
     def get(self):
-        self.get_user_info()
         
         self.display_html("home.html")
         
     
-
-
 class SignUp(Handler):
     
     
     def get(self):
+        args = self.request.get('dest_url', None)
+        if self.is_user_signed_up():
+            if args:
+                self.redirect(str(args))
+            else:
+                self.redirect('/')
+                
         self.display_html("signup.html")
         
         
     def post(self):
-        user = users.get_current_user()
+        
         firstname = self.request.get("firstname") 
         lastname = self.request.get("lastname")
         username = firstname + " " + lastname
@@ -98,7 +109,7 @@ class SignUp(Handler):
         member.firstname = firstname 
         member.lastname = lastname 
         member.phonenumber = phonenumber
-        member.email = user
+        member.email = self.user.email()
         
         member.put()
         self.redirect('/')
