@@ -2,6 +2,8 @@ import os, webapp2, jinja2
 from google.appengine.ext.webapp.util import run_wsgi_app
 from google.appengine.api import users
 import logging
+from models import members
+from __builtin__ import True
 
 
 current_folder = os.path.dirname(__file__)
@@ -11,10 +13,10 @@ environment = jinja2.Environment(loader = jinja2.FileSystemLoader(templates_fold
 
 class Handler(webapp2.RequestHandler):
     """Used to pass templates to each class"""
+    
     def __init__(self, request=None, response=None):
         super(Handler, self).__init__(request, response)
         self.values = {}
-        self.get_user_info()
         
     def write(self, *a):
         """ outputs the passed argument"""
@@ -26,7 +28,8 @@ class Handler(webapp2.RequestHandler):
     
     def display_html(self, template):
         self.write(self.render_html(template))
-        
+
+
     def get_user_info(self):
         """
         Figures out if the user is logged in and fills in global variables
@@ -35,11 +38,9 @@ class Handler(webapp2.RequestHandler):
         """
         self.user = users.get_current_user()
         if self.user:
-            url_link = users.create_logout_url("/")
-            email = self.user.email()
+            url_link = users.create_logout_url("/")           
         else:
-            url_link = users.create_login_url(self.request.uri)
-            
+            url_link = users.create_login_url(self.request.uri) 
         
         self.values["url_link"] = url_link
         self.values["user"] = self.user
@@ -47,20 +48,26 @@ class Handler(webapp2.RequestHandler):
     
     def is_user_signed_up(self):
         """
-        Returns true/false whether or not the user has signed up for medmenrva
+        Returns true/false whether or not the user has signed up for memenrva
         """
-        pass
-    
+        if self.is_user_logged_in():
+            member = members.Member().check_is_member(self.user.email())
+            
+            if member:
+                return True
+        return False
+
 
     def is_user_logged_in(self):
         """
-        Returns true/false whether or not the user is signed in or not
+        Returns true/false whether or not the user is signed in or not into their google account
         """
         if self.user:
             return True
         else:
             return False
         
+
 
 class MainPage(Handler):
     
@@ -80,24 +87,26 @@ class SignUp(Handler):
         
         
     def post(self):
+        user = users.get_current_user()
         firstname = self.request.get("firstname") 
         lastname = self.request.get("lastname")
         username = firstname + " " + lastname
         phonenumber = self.request.get("phonenumber")
         logging.info("my username is: " + username)
         
+        member = members.Member()
+        member.firstname = firstname 
+        member.lastname = lastname 
+        member.phonenumber = phonenumber
+        member.email = user
         
-
-class Login(Handler):
-    
-    def get(self):
-        self.display_html("login.html")
-        
+        member.put()
+        self.redirect('/')
+        logging.info("user: " + username)
 
 routes = [('/', MainPage),
           ('/signup', SignUp),
-          ('/login', Login),
-          ('/logout', Login)]
+        ]
 
 application = webapp2.WSGIApplication(routes, debug=True)
 
