@@ -1,10 +1,10 @@
 import os, webapp2, jinja2
-from google.appengine.ext.webapp.util import run_wsgi_app
 from google.appengine.api import users
 import logging
 from models import members
+from models import medicines
 import urllib 
-
+from datetime import datetime
 
 
 current_folder = os.path.dirname(__file__)
@@ -25,6 +25,7 @@ class Handler(webapp2.RequestHandler):
         self.user = users.get_current_user()
         self.values['user'] = self.user
         
+        
     def write(self, *a):
         """ outputs the passed argument"""
         self.response.out.write(*a)
@@ -42,7 +43,9 @@ class Handler(webapp2.RequestHandler):
             args = {'dest_url': self.request.uri}
             return users.create_login_url("/signup" + '?' +\
                                           urllib.urlencode(args))
-
+        else:
+            return users.create_login_url(self.request.uri)
+        
     def get_user_info(self):
     
         """Figures out if the user is logged in and fills in global variables
@@ -58,9 +61,11 @@ class Handler(webapp2.RequestHandler):
         Returns true/false whether or not the user has signed up for memenrva
         """
         if self.is_user_logged_in():
-            member = members.Member().check_is_member(self.user.email())
+            self.member = members.Member().get_member_by_email(self.user.email())
             
-            if member:
+            if self.member:
+                self.values["member"] = self.member
+                
                 return True
         return False
 
@@ -79,7 +84,6 @@ class Handler(webapp2.RequestHandler):
 class MainPage(Handler):
     
     def get(self):
-        
         self.display_html("home.html")
         
     
@@ -115,8 +119,62 @@ class SignUp(Handler):
         self.redirect('/')
         logging.info("user: " + username)
 
+
+class MedList(Handler):
+    
+    def get(self):
+        list_of_medicines = ""
+        if not self.is_user_signed_up():
+            return self.redirect(self.make_login_url())
+        
+        list_of_medicines = medicines.Medicine().get_medicines_by_member_key(self.member.key)
+        self.values['medicines'] = list_of_medicines
+        self.display_html('med_index.html')
+        
+class NewMed(Handler):
+    def get(self):
+        if not self.is_user_signed_up():
+            return self.redirect(self.make_login_url())
+        self.display_html('new_med.html')
+        
+        
+    def post(self):   
+        if not self.is_user_signed_up():
+            return self.redirect(self.make_login_url(False))
+        name = self.request.get('medname')
+        directions = self.request.get('directions')
+        dosage = self.request.get('dosage')
+        interval = int(self.request.get('interval'))
+        quantity = int(self.request.get('quantity'))
+        starttime = self.request.get('lastdosagetime')
+        startdate = self.request.get('lastdosagedate')
+        ampm = self.request.get('ampm')
+        date_and_time_str = startdate + starttime + ampm
+        timezone = self.request.get('timezone')
+        member = self.member.key
+        
+        formated_date_time = datetime.strptime(date_and_time_str, '%Y-%m-%d%I:%M%p')
+        
+        medicine = medicines.Medicine()
+        
+        medicine.name = name 
+        medicine.directions = directions
+        medicine.dosage = dosage
+        medicine.interval = interval
+        medicine.quantity = quantity
+        medicine.date_and_time = formated_date_time
+        medicine.member = member
+        
+        
+        medicine.put()
+        self.redirect('/medicines')
+        logging.info("added " + name)
+        
 routes = [('/', MainPage),
           ('/signup', SignUp),
+          ('/medicines', MedList),
+          ('/medicines/new', NewMed),
+          
         ]
 
 application = webapp2.WSGIApplication(routes, debug=True)

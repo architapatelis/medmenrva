@@ -7,10 +7,8 @@ class Member(ndb.Model):
     email = ndb.StringProperty()
     
     @staticmethod
-    def check_is_member(email):
-        member = Member.query(Member.email==email).get()
-        if member:
-            return True
-        else:
-            return False
+    def get_member_by_email(email):
+        return Member.query(Member.email==email).get()
         
+    
+    
