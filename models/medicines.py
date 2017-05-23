@@ -9,6 +9,16 @@ class Medicine(ndb.Model):
     date_and_time = ndb.DateTimeProperty()
     member = ndb.KeyProperty()
     
+    
     @staticmethod
-    def get_medicines_by_member_key(member):
-        return Medicine.query(Medicine.member==member).fetch()
+    def get_medicines_by_member_key(member_key):
+        return Medicine.query(Medicine.member==member_key).fetch()
+    
+    @staticmethod
+    def get_medicine_by_key_id(key_id):
+        med = None
+        try:
+            med = ndb.Key(urlsafe=key_id).get()
+        except:
+            med = None
+        return med

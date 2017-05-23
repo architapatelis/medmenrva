@@ -17,6 +17,7 @@ class Handler(webapp2.RequestHandler):
     
     def __init__(self, request=None, response=None):
         super(Handler, self).__init__(request, response)
+        
         self.values = {}
         self.logout_link = users.create_logout_url("/")
         self.values['logout_link'] = self.logout_link
@@ -25,6 +26,7 @@ class Handler(webapp2.RequestHandler):
         self.user = users.get_current_user()
         self.values['user'] = self.user
         
+       
         
     def write(self, *a):
         """ outputs the passed argument"""
@@ -84,6 +86,11 @@ class Handler(webapp2.RequestHandler):
 class MainPage(Handler):
     
     def get(self):
+        if self.is_user_logged_in():
+            self.member = members.Member().get_member_by_email(self.user.email())
+            
+            if self.member:
+                self.values["member"] = self.member
         self.display_html("home.html")
         
     
@@ -130,6 +137,10 @@ class MedList(Handler):
         list_of_medicines = medicines.Medicine().get_medicines_by_member_key(self.member.key)
         self.values['medicines'] = list_of_medicines
         self.display_html('med_index.html')
+        logging.info(self.member.firstname)
+        logging.info(self.user)
+        
+        
         
 class NewMed(Handler):
     def get(self):
@@ -167,14 +178,34 @@ class NewMed(Handler):
         
         
         medicine.put()
+        
         self.redirect('/medicines')
         logging.info("added " + name)
+        
+
+class ShowMed(Handler):
+    def get(self, med_id):
+        if not self.is_user_signed_up():
+            return self.redirect(self.make_login_url())
+    
+        medicine_to_show = medicines.Medicine().get_medicine_by_key_id(med_id)
+        
+        self.values['medicine_to_show'] = medicine_to_show
+        logging.info(medicine_to_show)
+        self.display_html('med_show.html')
+        
+        
+
+    
+    
+    
+    
         
 routes = [('/', MainPage),
           ('/signup', SignUp),
           ('/medicines', MedList),
           ('/medicines/new', NewMed),
-          
+          (r'/medicines/show/([^/]*)/?$', ShowMed)
         ]
 
 application = webapp2.WSGIApplication(routes, debug=True)
