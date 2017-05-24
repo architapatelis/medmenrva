@@ -22,3 +22,9 @@ class Medicine(ndb.Model):
         except:
             med = None
         return med
+    
+    
+    
+    
+    
+    

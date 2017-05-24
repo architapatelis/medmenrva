@@ -13,6 +13,7 @@
 				<div class="form-group">
 			    	<label for="medname">Medicine Name:</label>
 			    	<input type="text" class="form-control" name="medname" value="{{medname}}" placeholder="Enter medicine name" />
+			    	<p>{{medname_error}}</p>
 			  	</div>
 			  	<br/>
 			  	<div class="form-group">
@@ -47,7 +48,7 @@
 			  	</div>
 			  	<br/>
 			  	<div class="form-group">
-			    	<p>Take <input type="text" name="dosage" value="{{dosage}}" placeholder="Enter dosage" /> pills everything <input type="text" name="interval" value="{{interval}}" placeholder="Enter interval" /> hours.</p>
+			    	<p>Take <input type="text" name="dosage" value="{{dosage}}" placeholder="Enter dosage" /> pills every <input type="text" name="interval" value="{{interval}}" placeholder="Enter interval" /> hours.</p>
 			  	</div>
 			  	<br />
 			  	<button type="submit" class="btn btn-success" />Submit</button>

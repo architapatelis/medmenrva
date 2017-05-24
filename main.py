@@ -156,6 +156,7 @@ class NewMed(Handler):
     def post(self):   
         if not self.is_user_signed_up():
             return self.redirect(self.make_login_url(False))
+        
         name = self.request.get('medname')
         directions = self.request.get('directions')
         dosage = self.request.get('dosage')
@@ -181,9 +182,16 @@ class NewMed(Handler):
         medicine.member = member
         
         
-        medicine.put()
+        saved_med = medicine.put()
+        logging.info(saved_med)
         
-        self.redirect('/medicines')
+        if saved_med:
+            self.display('message.html')
+        else:
+            self.response.out.write("<p>Try Again!</p>")
+            
+        #self.redirect('/medicines')
+        #self.display_html('message.html')
         logging.info("added " + name)
         
 
@@ -195,8 +203,10 @@ class ShowMed(Handler):
         medicine_to_show = medicines.Medicine().get_medicine_by_key_id(med_id)
         
         self.values['medicine_to_show'] = medicine_to_show
-        logging.info(medicine_to_show.key.urlsafe())
+        #logging.info(medicine_to_show.key.urlsafe())
         self.display_html('med_show.html')
+        
+        
         
         
 
@@ -206,7 +216,6 @@ class EditMed(Handler):
             return self.redirect(self.make_login_url())
         
         medicine_to_edit = medicines.Medicine().get_medicine_by_key_id(med_id)
-        
         self.values['medicine_to_edit'] = medicine_to_edit
         
         self.display_html('med_edit.html')
@@ -219,8 +228,6 @@ class EditMed(Handler):
         medicine_to_edit = medicines.Medicine().get_medicine_by_key_id(med_id)
         
         self.values['medicine_to_edit'] = medicine_to_edit
-        
-        
         
         name = self.request.get('medname')
         directions = self.request.get('directions')
@@ -235,15 +242,29 @@ class EditMed(Handler):
         medicine_to_edit.put()
         
         self.redirect('/medicines')
+        
+class DeleteMed(Handler):
+    def get(self, med_id):
+        medicine_to_delete = medicines.Medicine().get_medicine_by_key_id(med_id)
+        logging.info(medicine_to_delete.key)
+        med_key = medicine_to_delete.key
+        logging.info(med_key)
+        med_key.delete()
+        
+        self.display_html('message.html')
     
-    
+        
+        
+        
         
 routes = [('/', MainPage),
           ('/signup', SignUp),
           ('/medicines', MedList),
           ('/medicines/new', NewMed),
           (r'/medicines/show/([^/]*)/?$', ShowMed),
-          (r'/medicines/([^/]*)/edit/?$', EditMed)
+          (r'/medicines/([^/]*)/edit/?$', EditMed),
+          (r'/medicines/([^/]*)/delete/?$', DeleteMed)
+          
         ]
 
 application = webapp2.WSGIApplication(routes, debug=True)
