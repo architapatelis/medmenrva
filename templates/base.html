@@ -21,8 +21,7 @@
   			<ul class="nav navbar-nav navbar-right" style="margin-top: 11px;margin-right: 5px;">
   				{% if user %}
  					<div class="pull-right">
- 						<p>hello {{member.firstname}}</p>
-            			<a href="{{logout_link}}">logout</a>
+            			<p style="color:#337ab7; display:inline;">Hello! {{member.firstname}}</p> / <a href="{{logout_link}}">logout</a>
             		</div>
           		{% else %}
             		<a href="{{login_link}}">login</a> / <a href="/signup">signup</a>

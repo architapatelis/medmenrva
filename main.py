@@ -67,7 +67,6 @@ class Handler(webapp2.RequestHandler):
             
             if self.member:
                 self.values["member"] = self.member
-                
                 return True
         return False
 
@@ -81,16 +80,21 @@ class Handler(webapp2.RequestHandler):
         else:
             return False
         
-
-
-class MainPage(Handler):
-    
-    def get(self):
+    def add_member_key_to_values_dict(self): 
         if self.is_user_logged_in():
             self.member = members.Member().get_member_by_email(self.user.email())
             
             if self.member:
                 self.values["member"] = self.member
+                
+
+
+
+
+class MainPage(Handler):
+    
+    def get(self):
+        self.add_member_key_to_values_dict()
         self.display_html("home.html")
         
     
@@ -191,13 +195,46 @@ class ShowMed(Handler):
         medicine_to_show = medicines.Medicine().get_medicine_by_key_id(med_id)
         
         self.values['medicine_to_show'] = medicine_to_show
-        logging.info(medicine_to_show)
+        logging.info(medicine_to_show.key.urlsafe())
         self.display_html('med_show.html')
         
         
 
+class EditMed(Handler):
+    def get(self, med_id):
+        if not self.is_user_signed_up():
+            return self.redirect(self.make_login_url())
+        
+        medicine_to_edit = medicines.Medicine().get_medicine_by_key_id(med_id)
+        
+        self.values['medicine_to_edit'] = medicine_to_edit
+        
+        self.display_html('med_edit.html')
     
-    
+    def post(self, med_id):  
+        if not self.is_user_signed_up():
+            return self.redirect(self.make_login_url(False))
+            
+        
+        medicine_to_edit = medicines.Medicine().get_medicine_by_key_id(med_id)
+        
+        self.values['medicine_to_edit'] = medicine_to_edit
+        
+        
+        
+        name = self.request.get('medname')
+        directions = self.request.get('directions')
+        dosage = self.request.get('dosage')
+        interval = int(self.request.get('interval'))
+        
+        medicine_to_edit.name = name
+        medicine_to_edit.directions = directions
+        medicine_to_edit.dosage = dosage
+        medicine_to_edit.interval = interval 
+        
+        medicine_to_edit.put()
+        
+        self.redirect('/medicines')
     
     
         
@@ -205,7 +242,8 @@ routes = [('/', MainPage),
           ('/signup', SignUp),
           ('/medicines', MedList),
           ('/medicines/new', NewMed),
-          (r'/medicines/show/([^/]*)/?$', ShowMed)
+          (r'/medicines/show/([^/]*)/?$', ShowMed),
+          (r'/medicines/([^/]*)/edit/?$', EditMed)
         ]
 
 application = webapp2.WSGIApplication(routes, debug=True)

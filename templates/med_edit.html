@@ -1,0 +1,34 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class='container'>
+	<div>
+		<h2>Edit {{medicine_to_edit.name}}</h2>
+	</div>
+	<br/>
+	
+	<div class="row">
+		<div class="col-md-8">
+			<form method="post">
+				<div class="form-group">
+			    	<label for="medname">Medicine Name:</label>
+			    	<input type="text" class="form-control" name="medname" value="{{medicine_to_edit.name}}" placeholder="Enter med name" />
+			  	</div>
+			  	<br/>
+			  	<div class="form-group">
+			    	<label for="directions">Directions:</label>
+			    	<input type="text" class="form-control" name="directions" value="{{medicine_to_edit.directions}}" placeholder="Enter directions" />
+			  	</div>
+			  	<br/>
+			  	<div class="form-group">
+			    	<p>Take <input type="text" name="dosage" value="{{medicine_to_edit.dosage}}" placeholder="Enter dosage" /> pills every <input type="text" name="interval" value="{{medicine_to_edit.interval}}" placeholder="Enter interval" /> hours.</p>
+			  	</div>
+			  	<br />
+			  	<button type="submit" class="btn btn-success" />Submit</button>
+			</form> 
+		</div>
+	</div>
+</div>
+{% endblock %}

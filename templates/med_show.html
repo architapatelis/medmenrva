@@ -1,1 +1,25 @@
-<h1>{{medicine_to_show.name}}</h1>
+{% extends 'base.html' %}
+
+{% block content %}
+<div>
+	<h1>{{medicine_to_show.name}}</h1>
+</div>
+
+<div class="row">
+	<div class="col-md-8">
+		{% if medicine_to_show.directions %}
+			<h4>Directions:</h4>
+			<p>{{medicine_to_show.directions}}<p>
+		{% else %}
+			<p>Directions not included</p>
+		{% endif %}
+		
+		<p>Take {{medicine_to_show.dosage}} every {{medicine_to_show.interval}} hour/hours.</p>
+	</div>
+	
+	<div class="col-md-4">
+		<a href="/medicines/{{medicine_to_show.key.urlsafe()}}/edit/" class="btn btn-primary">Edit</a>
+		<a href="#" class="btn btn-danger">Delete</a>
+	</div>
+</div>
+{% endblock %}
