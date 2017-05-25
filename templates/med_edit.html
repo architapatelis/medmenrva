@@ -14,16 +14,17 @@
 			<form method="post">
 				<div class="form-group">
 			    	<label for="medname">Medicine Name:</label>
-			    	<input type="text" class="form-control" name="medname" value="{{medicine_to_edit.name}}" placeholder="Enter med name" />
+			    	<input type="text" class="form-control" name="medname" value="{{medicine_to_edit.name}}" placeholder="Enter med name" required />
+			  		<p style="color: red;">{{error_name}}</p>
 			  	</div>
 			  	<br/>
 			  	<div class="form-group">
-			    	<label for="directions">Directions:</label>
+			    	<label for="directions">Directions(optional):</label>
 			    	<input type="text" class="form-control" name="directions" value="{{medicine_to_edit.directions}}" placeholder="Enter directions" />
 			  	</div>
 			  	<br/>
 			  	<div class="form-group">
-			    	<p>Take <input type="text" name="dosage" value="{{medicine_to_edit.dosage}}" placeholder="Enter dosage" /> pills every <input type="text" name="interval" value="{{medicine_to_edit.interval}}" placeholder="Enter interval" /> hours.</p>
+			    	<p>Take <input style="height:30px;" min="0" type="number" name="dosage" value="{{medicine_to_edit.dosage}}" placeholder="Enter dosage" required /> pills every <input style="height:30px;" min="0" type="number" name="interval" value="{{medicine_to_edit.interval}}" placeholder="Enter interval" required /> hours.</p>
 			  	</div>
 			  	<br />
 			  	<button type="submit" class="btn btn-success" />Submit</button>

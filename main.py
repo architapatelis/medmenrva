@@ -5,6 +5,7 @@ from models import members
 from models import medicines
 import urllib 
 from datetime import datetime
+import re
 
 
 current_folder = os.path.dirname(__file__)
@@ -36,7 +37,7 @@ class Handler(webapp2.RequestHandler):
         html = environment.get_template(template)
         return html.render(self.values)
     
-    def display_html(self, template):
+    def display_html(self, template, **params):
         self.write(self.render_html(template))
 
 
@@ -86,6 +87,14 @@ class Handler(webapp2.RequestHandler):
             
             if self.member:
                 self.values["member"] = self.member
+    
+    def valid_medname(self, medname):
+        medname_re = re.compile(r"^[a-zA-Z]*$")
+        return (medname if medname_re.match(medname) else False)
+    
+    """def valid_int_value(self, int_value):
+        int_value_re = re.compile(r"^[0-9]*$")
+        return (int_value if int_value_re.math(int_value) else False)"""
                 
 
 
@@ -157,9 +166,11 @@ class NewMed(Handler):
         if not self.is_user_signed_up():
             return self.redirect(self.make_login_url(False))
         
-        name = self.request.get('medname')
+        have_error = False
+        
+        self.values['medname'] = name = self.request.get('medname')
         directions = self.request.get('directions')
-        dosage = self.request.get('dosage')
+        dosage = int(self.request.get('dosage'))
         interval = int(self.request.get('interval'))
         quantity = int(self.request.get('quantity'))
         starttime = self.request.get('lastdosagetime')
@@ -171,27 +182,33 @@ class NewMed(Handler):
         
         formated_date_time = datetime.strptime(date_and_time_str, '%Y-%m-%d%I:%M%p')
         
-        medicine = medicines.Medicine()
+        valid_name = self.valid_medname(name)
         
-        medicine.name = name 
-        medicine.directions = directions
-        medicine.dosage = dosage
-        medicine.interval = interval
-        medicine.quantity = quantity
-        medicine.date_and_time = formated_date_time
-        medicine.member = member
-        
-        
-        saved_med = medicine.put()
-        logging.info(saved_med)
-        
-        if saved_med:
-            self.display('message.html')
-        else:
-            self.response.out.write("<p>Try Again!</p>")
+        if not valid_name:
+            have_error = True
+            self.values['error_name'] = 'That was not a valid name'
             
-        #self.redirect('/medicines')
-        #self.display_html('message.html')
+            
+        if have_error:
+            self.display_html('new_med.html')
+        else:
+            medicine = medicines.Medicine()
+            
+            medicine.name = name 
+            medicine.directions = directions
+            medicine.dosage = dosage
+            medicine.interval = interval
+            medicine.quantity = quantity
+            medicine.date_and_time = formated_date_time
+            medicine.member = member
+            
+            
+            saved_med = medicine.put()
+            logging.info(saved_med)
+            
+            if saved_med:
+                self.display_html('message.html')
+            
         logging.info("added " + name)
         
 
@@ -203,7 +220,6 @@ class ShowMed(Handler):
         medicine_to_show = medicines.Medicine().get_medicine_by_key_id(med_id)
         
         self.values['medicine_to_show'] = medicine_to_show
-        #logging.info(medicine_to_show.key.urlsafe())
         self.display_html('med_show.html')
         
         
@@ -229,19 +245,31 @@ class EditMed(Handler):
         
         self.values['medicine_to_edit'] = medicine_to_edit
         
-        name = self.request.get('medname')
+        self.values['medname'] = name = self.request.get('medname')
         directions = self.request.get('directions')
-        dosage = self.request.get('dosage')
+        dosage = int(self.request.get('dosage'))
         interval = int(self.request.get('interval'))
         
-        medicine_to_edit.name = name
-        medicine_to_edit.directions = directions
-        medicine_to_edit.dosage = dosage
-        medicine_to_edit.interval = interval 
+        have_error = False
+        valid_name = self.valid_medname(name)
         
-        medicine_to_edit.put()
+        if not valid_name:
+            have_error = True
+            self.values['error_name'] = 'That was not a valid name'
         
-        self.redirect('/medicines')
+           
+        if have_error:
+            self.display_html('med_edit.html')
+        else:
+            medicine_to_edit.name = name
+            medicine_to_edit.directions = directions
+            medicine_to_edit.dosage = dosage
+            medicine_to_edit.interval = interval 
+            
+            medicine_to_edit.put()
+        
+            self.display_html('message.html')
+            
         
 class DeleteMed(Handler):
     def get(self, med_id):
@@ -252,9 +280,7 @@ class DeleteMed(Handler):
         med_key.delete()
         
         self.display_html('message.html')
-    
-        
-        
+
         
         
 routes = [('/', MainPage),

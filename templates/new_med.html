@@ -12,31 +12,31 @@
 			<form method="post">
 				<div class="form-group">
 			    	<label for="medname">Medicine Name:</label>
-			    	<input type="text" class="form-control" name="medname" value="{{medname}}" placeholder="Enter medicine name" />
-			    	<p>{{medname_error}}</p>
+			    	<input type="text" class="form-control" name="medname" value="{{medname}}" placeholder="Enter medicine name" required/>
+			    	<p style="color: red;">{{error_name}}</p>
 			  	</div>
 			  	<br/>
 			  	<div class="form-group">
-			    	<label for="directions">Directions:</label>
+			    	<label for="directions">Directions(optional):</label>
 			    	<input type="text" class="form-control" name="directions" value="{{directions}}" placeholder="Enter directions" />
 			  	</div>
 			  	<br/>
 			  	<div class="form-group">
-			    	<label for="quantity">Total Current Quatity:</label>
-			    	<input type="text" class="form-control" name="quantity" value="{{quantity}}" placeholder="Enter quantity" />
+			    	<label for="quantity">Total Current Quantity:</label>
+			    	<input style="height:30px;" min="0" type="number" name="quantity" value="{{quantity}}" placeholder="Enter quantity" required />
 			  	</div>
 			  	<br/>
 			  	<div class="form-group ">
 			    	<label for="lastdosagetime">When did you last take the medicine?:</label>
 			    	<div>
 				    
-				    	<input type="text" name="lastdosagedate" value="{{lastdosagedate}}" placeholder="YYYY-MM-DD" />
-				    	<input type="text" name="lastdosagetime" value="{{lastdosagetime}}" placeholder="HH:MM" />
+				    	<input type="text" name="lastdosagedate" value="{{lastdosagedate}}" placeholder="YYYY-MM-DD" required />
+				    	<input type="text" name="lastdosagetime" value="{{lastdosagetime}}" placeholder="HH:MM" required />
 				  		 <select name="ampm">
 	  						<option value="AM">AM</option>
 	  						<option value="PM">PM</option>
 						</select> 
-						<select name="timezone">
+						<select name="timezone" required>
 							<option value="" default>Timezone</option>
 	  						<option value="US/Pacific">PT</option>
 	  						<option value="US/Mountain">MT</option>
@@ -48,7 +48,7 @@
 			  	</div>
 			  	<br/>
 			  	<div class="form-group">
-			    	<p>Take <input type="text" name="dosage" value="{{dosage}}" placeholder="Enter dosage" /> pills every <input type="text" name="interval" value="{{interval}}" placeholder="Enter interval" /> hours.</p>
+			    	<p>Take <input style="height:30px;" min="0" type="number" name="dosage" value="{{dosage}}" placeholder="Enter dosage" required /> pills every <input style="height:30px;" min="0" type="number" name="interval" value="{{interval}}" placeholder="Enter interval" required /> hours.</p>
 			  	</div>
 			  	<br />
 			  	<button type="submit" class="btn btn-success" />Submit</button>

@@ -3,7 +3,7 @@ from google.appengine.ext import ndb
 class Medicine(ndb.Model):
     name = ndb.StringProperty()
     directions = ndb.StringProperty()
-    dosage = ndb.StringProperty()
+    dosage = ndb.IntegerProperty()
     interval = ndb.IntegerProperty()
     quantity = ndb.IntegerProperty()
     date_and_time = ndb.DateTimeProperty()
