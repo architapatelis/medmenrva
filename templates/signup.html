@@ -8,20 +8,23 @@
 	<form method="post">
 		<div class="form-group">
 	    	<label for="firstname">First Name:</label>
-	    	<input type="text" class="form-control" name="firstname" value="{{firstname}}" placeholder="Enter first name" />
+	    	<input type="text" class="form-control" name="firstname" value="{{firstname}}" placeholder="Enter first name" required/>
+	  		<p style="color: red;">{{error_firstname}}</p>
 	  	</div>
 	  	<br/>
 	  	<div class="form-group">
 	    	<label for="lastname">Last Name:</label>
-	    	<input type="text" class="form-control" name="lastname" value="{{lastname}}" placeholder="Enter last name" />
+	    	<input type="text" class="form-control" name="lastname" value="{{lastname}}" placeholder="Enter last name" required/>
+	  		<p style="color: red;">{{error_lastname}}</p>
 	  	</div>
 	  	<br />
 	  	<div class="form-group">
 	    	<label for="phonenumber">Phone Number:</label>
-	    	<input type="tel" class="form-control" name="phonenumber" value="{{phonenumber}}" placeholder="Enter phone number" />
+	    	<input type="tel" class="form-control" name="phonenumber" value="{{phonenumber}}" placeholder="Enter phone number" required/>
+	  		<p style="color: red;">{{error_phonenumber}}</p>
 	  	</div>
 	  	<br />
-	  	<button type="submit" class="btn btn-success" />Submit</button>
+	  	<button type="submit" class="btn btn-success" />Sign-Up</button>
 	</form> 
 </div>
 {% endblock %}

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Medmenrva{% endblock %}</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  	<link rel="stylesheet" href="medmenrva/static/main.css" />
   </head>
 
 
@@ -19,9 +20,9 @@
         		<li><a href="/medicines">My Meds</a>
   			</ul>
   			<ul class="nav navbar-nav navbar-right" style="margin-top: 11px;margin-right: 5px;">
-  				{% if user %}
+  				{% if user and member %}
  					<div class="pull-right">
-            			<p style="color:#337ab7; display:inline;">Hello! {{member.firstname}}</p> / <a href="{{logout_link}}">logout</a>
+            			<p style="color:#337ab7; display:inline;">Hello! {{member.firstname}}</p> / <a href="{{logout_link}}">logout</a>	
             		</div>
           		{% else %}
             		<a href="{{login_link}}">login</a> / <a href="/signup">signup</a>
