@@ -5,6 +5,10 @@ api_version: 1
 threadsafe: true
 
 handlers:
+- url: /admin/.*
+  script: admin.APPLICATION
+  login: admin
+
 - url: /.*
   script: main.application
 

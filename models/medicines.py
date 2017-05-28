@@ -1,4 +1,5 @@
 from google.appengine.ext import ndb
+from datetime import datetime
 
 class Medicine(ndb.Model):
     name = ndb.StringProperty()
@@ -22,6 +23,11 @@ class Medicine(ndb.Model):
         except:
             med = None
         return med
+    
+    @staticmethod
+    def get_medicine_by_text_time():
+        current_time = datetime.utcnow()
+        return Medicine.query(Medicine.date_and_time >= current_time).fetch()
     
     
     

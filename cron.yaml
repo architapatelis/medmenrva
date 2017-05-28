@@ -1,0 +1,4 @@
+cron:
+- description: send text message to member when it's time to take their medicine
+  url: /admin/tasks/sendtextmessage
+  schedule: every 1 minutes
