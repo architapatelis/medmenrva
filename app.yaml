@@ -15,3 +15,11 @@ handlers:
 libraries:
 - name: jinja2
   version: latest
+
+- name: ssl
+  version: latest
+
+env_variables:
+  TWILIO_SID: AC91daee367d1823850c034a29c3c5d2f8
+  TWILIO_AUTH_TOKEN: 39ad5368845fb0c8cff35ac154af05a5
+  TWILIO_NUMBER: +16572206490

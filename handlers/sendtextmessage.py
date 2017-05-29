@@ -2,6 +2,7 @@ from basehandler import Handler
 from models import Medicine
 import arrow
 import logging
+from api import twilio_utils
 
 class SendTextMessage(Handler):
     def get(self):
@@ -17,3 +18,6 @@ class SendTextMessage(Handler):
                 medicine.date_and_time = new_text_time.naive
                 medicine.quantity -= medicine.dosage
                 medicine.put()
+                member = medicine.member.get()
+                twilio_utils.send_text_message(medicine.name, medicine.dosage, member.phonenumber, medicine.directions)
+                

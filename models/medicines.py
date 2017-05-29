@@ -27,7 +27,7 @@ class Medicine(ndb.Model):
     @staticmethod
     def get_medicine_by_text_time():
         current_time = datetime.utcnow()
-        return Medicine.query(Medicine.date_and_time >= current_time).fetch()
+        return Medicine.query(Medicine.date_and_time <= current_time).fetch()
     
     
     
