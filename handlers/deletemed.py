@@ -15,5 +15,4 @@ class DeleteMed(Handler):
         med_key = medicine_to_delete.key
         med_key.delete()
         
-        self.values['display_message'] = medicine_to_delete.name + " has been deleted!"
-        self.display_html('message.html')
+        self.display_message(medicine_to_delete.name, " has been deleted successfully!", '/medicines')

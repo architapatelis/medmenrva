@@ -19,8 +19,8 @@
 	  	</div>
 	  	<br />
 	  	<div class="form-group">
-	    	<label for="phonenumber">Phone Number:</label>
-	    	<input type="tel" class="form-control" name="phonenumber" value="{{phonenumber}}" placeholder="5556667777" required/>
+	    	<label for="phonenumber">Phone Number <em>(10 digits, no special characters or spaces)</em>:</label>
+	    	<input type="tel" class="form-control" maxlength="10" name="phonenumber" value="{{phonenumber}}" placeholder="5556667777" required/>
 	  		<p class="error">{{error_phonenumber}}</p>
 	  	</div>
 	  	<br />

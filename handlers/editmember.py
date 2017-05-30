@@ -53,6 +53,5 @@ class EditMember(Handler):
             saved_member = member_to_edit.put()
         
             if saved_member:
-                self.values['display_message'] = member_to_edit.firstname + " your profile has been edited successfully!"
-                self.display_html('message.html')
+                self.display_message(member_to_edit.firstname, " your profile has been edited successfully!", '/medicines')
 

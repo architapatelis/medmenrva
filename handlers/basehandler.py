@@ -93,7 +93,13 @@ class Handler(webapp2.RequestHandler):
         return (medname if medname_re.match(medname) else False)
                 
     def valid_phonenumber(self, phonenumber):
-        phonenumber_re = re.compile(r"^[0-9- ]*$")
+        phonenumber_re = re.compile(r"^[0-9]*$")
         return (phonenumber if phonenumber_re.match(phonenumber) else False)
+    
+    def display_message(self, entity_name, message,page):
+        self.values['display_message'] =  entity_name + message 
+        self.values['redirect_url'] = page
+        self.display_html('message.html')
+        
 
     

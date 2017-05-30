@@ -59,5 +59,12 @@ class NewMed(Handler):
             
             
             if saved_med:
-                self.values['display_message'] = medicine.name + " was saved successfully!"
-                self.display_html('message.html')
+                self.display_message(medicine.name, " was saved successfully!", '/medicines')
+                
+                
+                
+                
+                
+                
+                
+                

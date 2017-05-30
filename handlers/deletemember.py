@@ -21,5 +21,10 @@ class DeleteMember(Handler):
                 med_key.delete()
         member_key.delete()
         
-        self.values['display_message'] = member_to_delete.firstname + " your profile has been deleted!"
-        self.display_html('message.html')
+        self.display_message(member_to_delete.firstname, " your profile has been deleted successfully!", '/')
+        
+        
+        
+        
+        
+        

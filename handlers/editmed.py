@@ -45,6 +45,10 @@ class EditMed(Handler):
             saved_med = medicine_to_edit.put()
         
             if saved_med:
-                self.values['display_message'] = medicine_to_edit.name + " was edited successfully!"
-                self.display_html('message.html')
+                self.display_message(medicine_to_edit.name, " has been edited successfully!", '/medicines')
+                
+                
+                
+                
+                
             

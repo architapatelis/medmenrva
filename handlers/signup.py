@@ -4,14 +4,17 @@ from basehandler import Handler
 
 class SignUp(Handler):  
     def get(self):
+        if not self.user:
+            self.redirect(self.login_link)
+        
         args = self.request.get('dest_url', None)
         if self.is_user_signed_up():
             if args:
                 self.redirect(str(args))
             else:
-                self.redirect('/')
-                
+                self.redirect('/')       
         self.display_html("signup.html")
+        
         
         
     def post(self):
@@ -50,5 +53,11 @@ class SignUp(Handler):
             saved_member = member.put()
             
             if saved_member:
-                    self.values['display_message'] = member.firstname + " welcome to Medmenrva!"
-                    self.display_html('message.html')
+                    self.display_message(member.firstname, " welcome to Medmenrva!", "/medicines")
+                    
+                    
+                    
+                    
+                    
+                    
+                    
