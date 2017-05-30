@@ -86,6 +86,7 @@ class Handler(webapp2.RequestHandler):
             
             if self.member:
                 self.values["member"] = self.member
+                
     
     def valid_name(self, medname):
         medname_re = re.compile(r"^[a-zA-Z- ]*$")

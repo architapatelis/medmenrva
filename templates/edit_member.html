@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+	<div>
+		<h2>Edit Profile</h2>
+	</div>
+	<form method="post">
+		<div class="form-group">
+	    	<label for="firstname">First Name:</label>
+	    	<input type="text" class="form-control" name="firstname" value="{{member_to_edit.firstname}}" placeholder="Enter first name" required/>
+	  		<p style="color: red;">{{error_firstname}}</p>
+	  	</div>
+	  	<br/>
+	  	<div class="form-group">
+	    	<label for="lastname">Last Name:</label>
+	    	<input type="text" class="form-control" name="lastname" value="{{member_to_edit.lastname}}" placeholder="Enter last name" required/>
+	  		<p style="color: red;">{{error_lastname}}</p>
+	  	</div>
+	  	<br />
+	  	<div class="form-group">
+	    	<label for="phonenumber">Phone Number:</label>
+	    	<input type="tel" class="form-control" name="phonenumber" value="{{member_to_edit.phonenumber}}" placeholder="Enter phone number" required/>
+	  		<p style="color: red;">{{error_phonenumber}}</p>
+	  	</div>
+	  	<br />
+	  	<button type="submit" class="btn btn-success" />Update</button>
+	</form> 
+	<br/>
+	<h3>Cancel my account</h3>
+		<p><a href="/members/{{member_to_edit.key.urlsafe()}}/delete/" class="btn btn-danger">Delete Profile</a></p>
+
+</div>
+{% endblock %}
+
+
+
+

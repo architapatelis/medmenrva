@@ -7,15 +7,12 @@ from handlers import Handler
 
 
 class MainPage(Handler):
-    
     def get(self):
         self.add_member_key_to_values_dict()
         self.display_html("home.html")
         
     
-class SignUp(Handler):
-    
-    
+class SignUp(Handler):  
     def get(self):
         args = self.request.get('dest_url', None)
         if self.is_user_signed_up():
@@ -28,12 +25,11 @@ class SignUp(Handler):
         
         
     def post(self):
-        
         firstname = self.request.get("firstname") 
         lastname = self.request.get("lastname")
         username = firstname + " " + lastname
         phonenumber = self.request.get("phonenumber")
-        logging.info("my username is: " + username)
+        
         
         
         have_error = False
@@ -69,11 +65,10 @@ class SignUp(Handler):
                     self.display_html('message.html')
                 
         
-        logging.info("user: " + username)
+        
 
 
 class MedList(Handler):
-    
     def get(self):
         #list_of_medicines = ""
         if not self.is_user_signed_up():
@@ -82,11 +77,8 @@ class MedList(Handler):
         list_of_medicines = medicines.Medicine().get_medicines_by_member_key(self.member.key)
         self.values['medicines'] = list_of_medicines
         self.display_html('med_index.html')
-        logging.info(self.member.firstname)
-        logging.info(self.user)
         
-        
-        
+    
 class NewMed(Handler):
     def get(self):
         if not self.is_user_signed_up():
@@ -97,8 +89,6 @@ class NewMed(Handler):
     def post(self):   
         if not self.is_user_signed_up():
             return self.redirect(self.make_login_url(False))
-        
-        
         
         self.values['medname'] = name = self.request.get('medname')
         directions = self.request.get('directions')
@@ -134,18 +124,17 @@ class NewMed(Handler):
             medicine.interval = interval
             medicine.quantity = quantity
             medicine.date_and_time = date_time_to_utc.naive
+            medicine.timezone = timezone
             medicine.member = member
             
             
             saved_med = medicine.put()
-            logging.info(saved_med)
+            
             
             if saved_med:
                 self.values['display_message'] = medicine.name + " was saved successfully!"
                 self.display_html('message.html')
-            
-        logging.info("added " + name)
-        
+
 
 class ShowMed(Handler):
     def get(self, med_id):
@@ -155,10 +144,13 @@ class ShowMed(Handler):
         medicine_to_show = medicines.Medicine().get_medicine_by_key_id(med_id)
         
         self.values['medicine_to_show'] = medicine_to_show
+        local_date_and_time = arrow.get(medicine_to_show.date_and_time).to(medicine_to_show.timezone)
+        next_dosage_date_and_time = local_date_and_time.naive
+        next_dosage_date = next_dosage_date_and_time.strftime("%B %d, %Y")
+        next_dosage_time = next_dosage_date_and_time.strftime("%I:%M%p")
+        self.values['next_dosage_date'] = next_dosage_date
+        self.values['next_dosage_time'] = next_dosage_time
         self.display_html('med_show.html')
-        
-        
-        
         
 
 class EditMed(Handler):
@@ -204,7 +196,7 @@ class EditMed(Handler):
             saved_med = medicine_to_edit.put()
         
             if saved_med:
-                self.values['display_message'] = medicine_to_edit.name + " was saved successfully!"
+                self.values['display_message'] = medicine_to_edit.name + " was edited successfully!"
                 self.display_html('message.html')
             
             
@@ -216,15 +208,85 @@ class DeleteMed(Handler):
         
         
         medicine_to_delete = medicines.Medicine().get_medicine_by_key_id(med_id)
-        logging.info(medicine_to_delete.key)
         med_key = medicine_to_delete.key
-        logging.info(med_key)
         med_key.delete()
         
         self.values['display_message'] = medicine_to_delete.name + " has been deleted!"
         self.display_html('message.html')
-
         
+        
+class EditMember(Handler):
+    def get(self, member_id):
+        if not self.is_user_signed_up():
+            return self.redirect(self.make_login_url())
+        
+        member_to_edit = members.Member().get_member_by_key_id(member_id)
+        self.values["member_to_edit"] = member_to_edit
+        
+        self.display_html('edit_member.html')
+    
+    def post(self, member_id):  
+        if not self.is_user_signed_up():
+            return self.redirect(self.make_login_url(False))
+            
+        
+        member_to_edit = members.Member().get_member_by_key_id(member_id)
+        self.values["member_to_edit"] = member_to_edit
+    
+        firstname = self.request.get('firstname')
+        lastname = self.request.get('lastname')
+        phonenumber = self.request.get('phonenumber')
+        
+        
+        have_error = False
+        valid_firstname = self.valid_name(firstname)
+        valid_lastname = self.valid_name(lastname)
+        valid_phonenumber = self.valid_phonenumber(phonenumber)
+        
+        if not valid_firstname:
+            have_error = True
+            self.values['error_firstname'] = 'This is not a valid firstname'
+        if not valid_lastname:
+            have_error = True
+            self.values['error_lastname'] = 'This is not a valid lastname'
+        if not valid_phonenumber:
+            have_error = True
+            self.values['error_phonenumber'] = 'This is not a valid phonenumber'
+        
+           
+        if have_error:
+            self.display_html('edit_member.html')
+        else:
+            member_to_edit.firstname = firstname
+            member_to_edit.lastname = lastname
+            member_to_edit.phonenumber = phonenumber
+            
+            saved_member = member_to_edit.put()
+        
+            if saved_member:
+                self.values['display_message'] = member_to_edit.firstname + " your profile has been edited successfully!"
+                self.display_html('message.html')
+
+
+class DeleteMember(Handler):
+    def get(self, member_id):
+        if not self.is_user_signed_up():
+            return self.redirect(self.make_login_url())
+        
+        member_to_delete = members.Member().get_member_by_key_id(member_id)
+        member_key = member_to_delete.key
+        member_medicine = medicines.Medicine().get_medicines_by_member_key(member_key)
+        if member_medicine:
+            for medicine in member_medicine:
+                med_key = medicine.key
+                med_key.delete()
+        member_key.delete()
+        
+        self.values['display_message'] = member_to_delete.firstname + " your profile has been deleted!"
+        self.display_html('message.html')
+    
+
+
         
 routes = [('/', MainPage),
           ('/signup', SignUp),
@@ -232,7 +294,9 @@ routes = [('/', MainPage),
           ('/medicines/new', NewMed),
           (r'/medicines/show/([^/]*)/?$', ShowMed),
           (r'/medicines/([^/]*)/edit/?$', EditMed),
-          (r'/medicines/([^/]*)/delete/?$', DeleteMed)
+          (r'/medicines/([^/]*)/delete/?$', DeleteMed),
+          (r'/members/([^/]*)/edit/?$', EditMember),
+          (r'/members/([^/]*)/delete/?$', DeleteMember)
         ]
 
 application = webapp2.WSGIApplication(routes, debug=True)

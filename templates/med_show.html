@@ -2,9 +2,9 @@
 
 {% block content %}
 <div>
-	<h1>{{medicine_to_show.name}}</h1>
+	<h1 class="med-title">{{medicine_to_show.name}}</h1>
 </div>
-
+<br />
 <div class="row">
 	<div class="col-md-8">
 		{% if medicine_to_show.directions %}
@@ -13,8 +13,13 @@
 		{% else %}
 			<p>Directions not included</p>
 		{% endif %}
-		
 		<p>Take {{medicine_to_show.dosage}} every {{medicine_to_show.interval}} hour/hours.</p>
+		<br/>
+		<h4>Quantity:</h4>
+		<p>You have a total of {{medicine_to_show.quantity}} pills left</p>
+		<br/>
+		<h4>Alert Time:</h4>
+		<p>Your next alert will on {{next_dosage_date}} at {{next_dosage_time}}</p>
 	</div>
 	
 	<div class="col-md-4">

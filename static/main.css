@@ -1,6 +1,17 @@
 .success-banner {
-	width: 20em;
-	height: 20em;
-	background-color: #d6e9f8;
-	border: 2px solid #67a7e3;
+	text-align: center;
+	margin: 1em auto;
+}
+
+.error {
+	color: red;
+}
+
+.integer-input {
+	 height: 30px;
+}
+
+.med-title {
+	text-align: center;
+	margin-bottom: 20px;
 }

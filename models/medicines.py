@@ -8,6 +8,7 @@ class Medicine(ndb.Model):
     interval = ndb.IntegerProperty()
     quantity = ndb.IntegerProperty()
     date_and_time = ndb.DateTimeProperty()
+    timezone = ndb.StringProperty()
     member = ndb.KeyProperty()
     
     

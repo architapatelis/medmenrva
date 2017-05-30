@@ -9,6 +9,15 @@ class Member(ndb.Model):
     @staticmethod
     def get_member_by_email(email):
         return Member.query(Member.email==email).get()
+    
+    @staticmethod
+    def get_member_by_key_id(key_id):
+        member = None
+        try:
+            member = ndb.Key(urlsafe=key_id).get()
+        except:
+            member = None
+        return member
         
     
     
