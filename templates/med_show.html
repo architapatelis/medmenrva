@@ -7,12 +7,14 @@
 <br />
 <div class="row">
 	<div class="col-md-8">
+		<h4>Directions:</h4>
 		{% if medicine_to_show.directions %}
-			<h4>Directions:</h4>
 			<p>{{medicine_to_show.directions}}<p>
 		{% else %}
 			<p>Directions not included</p>
 		{% endif %}
+		<br/>
+		<h4>Dosage:</h4>
 		<p>Take {{medicine_to_show.dosage}} every {{medicine_to_show.interval}} hour/hours.</p>
 		<br/>
 		<h4>Quantity:</h4>

@@ -13,7 +13,6 @@ class SendTextMessage(Handler):
         list_of_medicines_to_text = Medicine().get_medicine_by_text_time()
         for medicine in list_of_medicines_to_text:
             if medicine.quantity > 0:
-                logging.info('There are %s meds' % medicine.quantity)
                 new_text_time = arrow.get(medicine.date_and_time).replace(hours=+medicine.interval)
                 medicine.date_and_time = new_text_time.naive
                 medicine.quantity -= medicine.dosage
